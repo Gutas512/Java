@@ -1,0 +1,10 @@
+def soma_pares():
+    soma = 0
+    for numero in range(50, 101):
+        if numero % 2 == 0:
+            soma += numero
+    return soma
+
+# Chama a função e imprime o resultado
+resultado = soma_pares()
+print(f"A soma de todos os números pares entre 50 e 100 é: {resultado}")
