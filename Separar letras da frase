@@ -1,0 +1,18 @@
+# Solicita a frase do usuário
+frase = input("Informe uma frase: ")
+
+# Cria um dicionário para armazenar os caracteres e suas posições
+dicionario = {}
+
+# Inicializa o contador de posição
+posicao = 1
+
+# Percorre cada caractere da frase
+for letra in frase:
+    # Adiciona o caractere e sua posição no dicionário
+    dicionario[letra] = posicao
+    # Incrementa o contador de posição
+    posicao += 1
+
+# Exibe o dicionário
+print(dicionario)
