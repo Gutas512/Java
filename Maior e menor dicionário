@@ -1,0 +1,17 @@
+dicionario = {
+    "1": 8,
+    "2": 99,
+    "3": 0,
+    "4": 6,
+    "5": 44,
+    "6": 22,
+    "7": 74,
+    "8": -90,
+    "9": 2,
+    "10": 8,
+}
+
+maior_valor = max(dicionario.values())
+menor_calor = min(dicionario.values())
+
+print("Maior valor: ",maior_valor,"\nMenor valor",menor_calor)
