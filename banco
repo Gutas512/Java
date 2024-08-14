@@ -1,0 +1,62 @@
+class Cliente:
+    def _init_(self, nome, telefone):
+        self.nome = nome
+        self.telefone = telefone
+
+class Conta:
+    def _init_(self, cliente, numero, saldo=0):
+        self.saldo = saldo
+        self.cliente = cliente
+        self.numero = numero
+        self.operacoes = []
+        self.deposito(saldo)
+
+    def resumo(self):
+        # Atributos do cliente a serem exibidos
+        atributos = ["nome", "telefone"]
+
+        print("Resumo do Cliente:")
+        for atributo in atributos:
+            valor = getattr(self.cliente, atributo)
+            print(f"{atributo.capitalize()}: {valor}")
+        print(f"CC N°: {self.numero}\nSaldo: {self.saldo:10.2f}")
+
+    def saque(self, valor):
+        if self.saldo >= valor:
+            self.saldo -= valor
+            self.operacoes.append(["Saque", valor])
+        else:
+            print("Saldo insuficiente!")
+
+    def deposito(self, valor):
+        self.saldo += valor
+        self.operacoes.append(["Depósito", valor])
+
+    def extrato(self):
+        print(f"Extrato CC N° {self.numero}\n")
+        for o in self.operacoes:
+            print(f"{o[0]:10s} {o[1]:10.2f}")
+        print(f"\nSaldo: {self.saldo:10.2f}\n")
+
+class ContaEspecial(Conta):
+    def _init_(self, cliente, numero, saldo=0, limite=0):
+        Conta._init_(self, cliente, numero, saldo)
+        self.limite = limite
+
+    def saque(self, valor):
+        if self.saldo + self.limite >= valor:
+            self.saldo -= valor
+            self.operacoes.append(["Saque", valor])
+        else:
+            Conta.saque(self, valor)
+
+# Criação de dois objetos Cliente
+maria = Cliente("Maria", "1234-5678")
+joao = Cliente("João", "8765-4321")
+
+# Criação de uma Conta e exibição do resumo
+conta_maria = Conta(maria, 123, 1000)
+conta_joao = Conta(joao, 456, 500)
+
+conta_maria.resumo()
+conta_joao.resumo()
