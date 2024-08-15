@@ -1,0 +1,55 @@
+class Estado:
+    def __init__(self, nome, sigla):
+        self.nome = nome
+        self.sigla = sigla
+        self.cidades = []
+
+    def adiciona_cidade(self, cidade):
+        cidade.estado = self
+        self.cidades.append(cidade)
+
+    def soma_populacao(self):
+        return sum([c.populacao for c in self.cidades])
+
+    def exibe_cidades(self):
+        for cidade in self.cidades:
+            print(f"Cidade: {cidade.nomecid}, População: {cidade.populacao}")
+
+class Cidade:
+    def __init__(self, nomecid, populacao):
+        self.nomecid = nomecid
+        self.populacao = populacao
+        self.estado = None
+
+
+# Criando o estado Amazonas
+am = Estado("Amazonas", "AM")
+
+# Adicionando cidades ao estado Amazonas
+am.adiciona_cidade(Cidade("Manaus", 1861838))
+am.adiciona_cidade(Cidade("Parintins", 103828))
+am.adiciona_cidade(Cidade("Itacoatiara", 89064))
+
+# Criando o estado São Paulo
+sp = Estado("São Paulo", "SP")
+
+# Adicionando cidades ao estado São Paulo
+sp.adiciona_cidade(Cidade("São Paulo", 11376685))
+sp.adiciona_cidade(Cidade("Guarulhos", 1244518))
+sp.adiciona_cidade(Cidade("Campinas", 1098630))
+
+# Criando o estado Bahia
+ba = Estado("Bahia", "BA")
+
+# Adicionando cidades ao estado Bahia
+ba.adiciona_cidade(Cidade("Salvador", 2886698))
+ba.adiciona_cidade(Cidade("Feira de Santana", 619609))
+ba.adiciona_cidade(Cidade("Vitória da Conquista", 343230))
+
+# Exibindo a população de cada cidade e a soma das populações de cada estado
+estados = [am, sp, ba]
+
+for estado in estados:
+    print(f"\nEstado: {estado.nome} ({estado.sigla})")
+    estado.exibe_cidades()
+    print(f"População total do estado: {estado.soma_populacao()}")
