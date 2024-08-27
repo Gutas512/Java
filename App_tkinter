@@ -1,0 +1,291 @@
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
+import sqlite3
+from usuarios import *
+
+
+class Application:
+    def __init__(self, master=None):
+        self.fonte = ("Verdana", "8")
+
+        # Configuração da janela principal
+        self.master = master
+        self.master.title("Gerenciamento de Dados")
+
+        # Menu
+        self.menu = Menu(self.master)
+        self.master.config(menu=self.menu)
+
+        self.menu_entidade = Menu(self.menu)
+        self.menu.add_cascade(label="Entidades", menu=self.menu_entidade)
+        self.menu_entidade.add_command(label="Usuários", command=lambda: self.atualizar_interface("usuarios"))
+        self.menu_entidade.add_command(label="Cidades", command=lambda: self.atualizar_interface("cidades"))
+        self.menu_entidade.add_command(label="Clientes", command=lambda: self.atualizar_interface("clientes"))
+        self.menu_entidade.add_command(label="Visualizar Dados", command=self.exibir_dados)
+
+        def Quit():
+            root.destroy()
+
+        self.menu.add_command(label='Sair', command=Quit)
+
+        # Containers
+        self.container1 = Frame(master)
+        self.container1["pady"] = 10
+        self.container1.pack()
+
+        self.container2 = Frame(master)
+        self.container2["padx"] = 20
+        self.container2["pady"] = 5
+        self.container2.pack()
+
+        self.container3 = Frame(master)
+        self.container3["padx"] = 20
+        self.container3["pady"] = 5
+        self.container3.pack()
+
+        self.container4 = Frame(master)
+        self.container4["padx"] = 20
+        self.container4["pady"] = 5
+        self.container4.pack()
+
+        self.container5 = Frame(master)
+        self.container5["padx"] = 20
+        self.container5["pady"] = 5
+        self.container5.pack()
+
+        self.container6 = Frame(master)
+        self.container6["padx"] = 20
+        self.container6["pady"] = 10
+        self.container6.pack()
+
+        self.container7 = Frame(master)
+        self.container7["pady"] = 15
+        self.container7.pack()
+
+        # Elementos de entrada e botões (reutilizados conforme a entidade selecionada)
+        self.lbl_id = Label(self.container3, font=self.fonte, width=10)
+        self.lbl_id.pack(side=LEFT)
+
+        self.txt_id = Entry(self.container3)
+        self.txt_id["width"] = 10
+        self.txt_id["font"] = self.fonte
+        self.txt_id.pack(side=LEFT)
+
+        self.btnBuscar = Button(self.container3, text="Buscar", font=self.fonte, width=10)
+        self.btnBuscar.pack(side=RIGHT)
+
+        self.lbl_nome = Label(self.container4, text="Nome:", font=self.fonte, width=10)
+        self.lbl_nome.pack(side=LEFT)
+
+        self.txt_nome = Entry(self.container4)
+        self.txt_nome["width"] = 25
+        self.txt_nome["font"] = self.fonte
+        self.txt_nome.pack(side=LEFT)
+
+        self.lbl_telefone = Label(self.container5, text="", font=self.fonte, width=10)
+        self.lbl_telefone.pack(side=LEFT)
+
+        self.txt_telefone = Entry(self.container5)
+        self.txt_telefone["width"] = 25
+        self.txt_telefone["font"] = self.fonte
+        self.txt_telefone.pack(side=LEFT)
+
+        self.lbl_email = Label(self.container6, text="", font=self.fonte, width=10)
+        self.lbl_email.pack(side=LEFT)
+
+        self.txt_email = Entry(self.container6)
+        self.txt_email["width"] = 25
+        self.txt_email["font"] = self.fonte
+        self.txt_email.pack(side=LEFT)
+
+        self.bntInsert = Button(self.container7, text="Inserir", font=self.fonte, width=12)
+        self.bntInsert.pack(side=LEFT)
+
+        self.bntAlterar = Button(self.container7, text="Alterar", font=self.fonte, width=12)
+        self.bntAlterar.pack(side=LEFT)
+
+        self.bntExcluir = Button(self.container7, text="Excluir", font=self.fonte, width=12)
+        self.bntExcluir.pack(side=LEFT)
+
+        self.lblmsg = Label(self.container7, text="")
+        self.lblmsg["font"] = ("Verdana", "9", "italic")
+        self.lblmsg.pack()
+
+        # Inicializa com "Usuários" como padrão
+        self.atualizar_interface("usuarios")
+
+    def atualizar_interface(self, entidade_selecionada):
+        self.limparCampos()
+        if entidade_selecionada == "usuarios":
+            self.lbl_id.config(text="idUsuario:")
+            self.lbl_telefone.config(text="Telefone:")
+            self.lbl_email.config(text="E-mail:")
+
+            self.txt_telefone.config(state=NORMAL)
+            self.txt_email.config(state=NORMAL)
+
+            self.btnBuscar.config(command=self.buscarUsuario)
+            self.bntInsert.config(command=self.inserirUsuario)
+            self.bntAlterar.config(command=self.alterarUsuario)
+            self.bntExcluir.config(command=self.excluirUsuario)
+
+        elif entidade_selecionada == "cidades":
+            self.lbl_id.config(text="idCidade:")
+            self.lbl_telefone.config(text="CEP:")
+            self.lbl_email.config(text="UF:")
+
+            self.txt_telefone.config(state=NORMAL)
+            self.txt_email.config(state=NORMAL)
+
+            self.btnBuscar.config(command=self.buscarCidade)
+            self.bntInsert.config(command=self.inserirCidade)
+            self.bntAlterar.config(command=self.alterarCidade)
+            self.bntExcluir.config(command=self.excluirCidade)
+
+        elif entidade_selecionada == "clientes":
+            self.lbl_id.config(text="idCliente:")
+            self.lbl_telefone.config(text="Telefone:")
+            self.lbl_email.config(text="E-mail:")
+
+            self.txt_telefone.config(state=NORMAL)
+            self.txt_email.config(state=NORMAL)
+
+            self.btnBuscar.config(command=self.buscarCliente)
+            self.bntInsert.config(command=self.inserirCliente)
+            self.bntAlterar.config(command=self.alterarCliente)
+            self.bntExcluir.config(command=self.excluirCliente)
+
+    def exibir_dados(self):
+        # Janela para exibir dados no Treeview
+        self.janela_dados = Toplevel(self.master)
+        self.janela_dados.title("Exibindo Dados do Banco de Dados")
+
+        # Configurando a Treeview
+        columns = ("ID", "Nome", "Telefone", "Email")
+        treeview = ttk.Treeview(self.janela_dados, columns=columns, show='headings')
+        for col in columns:
+            treeview.heading(col, text=col)
+
+        treeview.pack(fill=BOTH, expand=True)
+
+        # Pegando os dados do banco e populando a Treeview
+        data = self.fetch_data()
+        self.populate_treeview(treeview, data)
+
+    def fetch_data(self):
+        conn = sqlite3.connect('banco.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
+    def populate_treeview(self, treeview, data):
+        for row in data:
+            treeview.insert("", "end", values=row)
+
+    def inserirUsuario(self):
+        user = Usuarios()
+        user.nome = self.txt_nome.get()
+        user.telefone = self.txt_telefone.get()
+        user.email = self.txt_email.get()
+        self.lblmsg["text"] = user.insertUser()
+        self.limparCampos()
+
+    def alterarUsuario(self):
+        user = Usuarios()
+        user.idusuario = self.txt_id.get()
+        user.nome = self.txt_nome.get()
+        user.telefone = self.txt_telefone.get()
+        user.email = self.txt_email.get()
+        self.lblmsg["text"] = user.updateUser()
+        self.limparCampos()
+
+    def excluirUsuario(self):
+        user = Usuarios()
+        user.idusuario = self.txt_id.get()
+        self.lblmsg["text"] = user.deleteUser()
+        self.limparCampos()
+
+    def buscarUsuario(self):
+        user = Usuarios()
+        idusuario = self.txt_id.get()
+        self.lblmsg["text"] = user.selectUser(idusuario)
+        self.preencherCampos(user)
+
+    def inserirCidade(self):
+        cidade = Cidades()
+        cidade.nomecid = self.txt_nome.get()
+        cidade.cep = self.txt_telefone.get()
+        cidade.UF = self.txt_email.get()
+        self.lblmsg["text"] = cidade.insertCidade()
+        self.limparCampos()
+
+    def alterarCidade(self):
+        cidade = Cidades()
+        cidade.idcidade = self.txt_id.get()
+        cidade.nomecid = self.txt_nome.get()
+        cidade.cep = self.txt_telefone.get()
+        cidade.UF = self.txt_email.get()
+        self.lblmsg["text"] = cidade.updateCidade()
+        self.limparCampos()
+
+    def excluirCidade(self):
+        cidade = Cidades()
+        cidade.idcidade = self.txt_id.get()
+        self.lblmsg["text"] = cidade.deleteCidade()
+        self.limparCampos()
+
+    def buscarCidade(self):
+        cidade = Cidades()
+        idcidade = self.txt_id.get()
+        self.lblmsg["text"] = cidade.selectCidade(idcidade)
+        self.preencherCampos(cidade)
+
+    def inserirCliente(self):
+        cliente = Clientes()
+        cliente.nome = self.txt_nome.get()
+        cliente.telefone = self.txt_telefone.get()
+        cliente.email = self.txt_email.get()
+        self.lblmsg["text"] = cliente.insertCliente()
+        self.limparCampos()
+
+    def alterarCliente(self):
+        cliente = Clientes()
+        cliente.idcliente = self.txt_id.get()
+        cliente.nome = self.txt_nome.get()
+        cliente.telefone = self.txt_telefone.get()
+        cliente.email = self.txt_email.get()
+        self.lblmsg["text"] = cliente.updateCliente()
+        self.limparCampos()
+
+    def excluirCliente(self):
+        cliente = Clientes()
+        cliente.idcliente = self.txt_id.get()
+        self.lblmsg["text"] = cliente.deleteCliente()
+        self.limparCampos()
+
+    def buscarCliente(self):
+        cliente = Clientes()
+        idcliente = self.txt_id.get()
+        self.lblmsg["text"] = cliente.selectCliente(idcliente)
+        self.preencherCampos(cliente)
+
+    def limparCampos(self):
+        self.txt_id.delete(0, END)
+        self.txt_nome.delete(0, END)
+        self.txt_telefone.delete(0, END)
+        self.txt_email.delete(0, END)
+
+    def preencherCampos(self, entidade):
+        self.txt_id.insert(INSERT, entidade.id)
+        self.txt_nome.insert(INSERT, entidade.nome)
+        self.txt_telefone.insert(INSERT, entidade.telefone)
+        self.txt_email.insert(INSERT, entidade.email)
+
+
+root = Tk()
+root.attributes('-fullscreen',True)
+Application(root)
+root.mainloop()
